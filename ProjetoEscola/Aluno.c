@@ -895,14 +895,98 @@ int reportStudentsGender(){
   }
 }
 int reportStudentNameOrder(){
-  
+  for (int i = 0; i < qty_student - 1; i++) {
+    for (int j = 0; j < qty_student - i - 1; j++) {
+        if (strcmp(listStudent[j].name, listStudent[j+1].name) > 0) {
+            Student aux = listStudent[j];
+            listStudent[j] = listStudent[j+1];
+            listStudent[j+1] = aux;
+        }
+    }
 }
-int reportStudentBirthdateOrder(){
-  
+  printf("Student Order by Name");
+  for (int i = 0; i < qty_student; i++) {
+    printf("%s", listStudent[i].name);
+  }
 }
-int reportTeacherNameOrder(){}
-int reportTeacherBirthdateOrder(){}
 
+int reportStudentBirthdateOrder(){
+  Student aux;
+  printf("Students order by birthdate");
+  for (int i = 0; i < qty_student-1; i++) {
+    for (int j = 0; j < qty_student-i-1; j++) {
+      
+      if (listStudent[j].birthdate.year > listStudent[j+1].birthdate.year) {
+        aux = listStudent[j];
+        listStudent[j] = listStudent[j+1];
+        listStudent[j+1] = aux;
+        
+      } else if (listStudent[j].birthdate.year == listStudent[j+1].birthdate.year &&
+                 listStudent[j].birthdate.month > listStudent[j+1].birthdate.month) {
+        aux = listStudent[j];
+        listStudent[j] = listStudent[j+1];
+        listStudent[j+1] = aux;
+        
+      } else if (listStudent[j].birthdate.year == listStudent[j+1].birthdate.year &&
+                 listStudent[j].birthdate.month == listStudent[j+1].birthdate.month &&
+                 listStudent[j].birthdate.day > listStudent[j+1].birthdate.day) {
+        aux = listStudent[j];
+        listStudent[j] = listStudent[j+1];
+        listStudent[j+1] = aux;
+      }
+    }
+  }
+  for(int i = 0; i < qty_student; i++) {
+    printf("%d/%d/%d ----- %s\n", listStudent[i].birthdate.day, listStudent[i].birthdate.month, listStudent[i].birthdate.year, listStudent[i].name);
+  }
+}
+
+int reportTeacherNameOrder(){
+    for (int i = 0; i < qty_teacher - 1; i++) {
+    for (int j = 0; j < qty_teacher - i - 1; j++) {
+        if (strcmp(listTeacher[j].name, listStudent[j+1].name) > 0) {
+            Teacher aux = listTeacher[j];
+            listTeacher[j] = listTeacher[j+1];
+            listTeacher[j+1] = aux;
+        }
+    }
+}
+  printf("Teacher Order by Name");
+  for (int i = 0; i < qty_teacher; i++) {
+    printf("%s", listTeacher[i].name);
+  }
+}
+
+int reportTeacherBirthdateOrder(){
+  Teacher aux;
+  printf("Teachers order by birthdate");
+  for (int i = 0; i < qty_teacher-1; i++) {
+    for (int j = 0; j < qty_teacher-i-1; j++) {
+      
+      if (listTeacher[j].birthdate.year > listTeacher[j+1].birthdate.year) {
+        aux = listTeacher[j];
+        listTeacher[j] = listTeacher[j+1];
+        listTeacher[j+1] = aux;
+        
+      } else if (listTeacher[j].birthdate.year == listTeacher[j+1].birthdate.year &&
+                 listTeacher[j].birthdate.month > listTeacher[j+1].birthdate.month) {
+        aux = listTeacher[j];
+        listTeacher[j] = listTeacher[j+1];
+        listTeacher[j+1] = aux;
+        
+      } else if (listTeacher[j].birthdate.year == listTeacher[j+1].birthdate.year &&
+                 listTeacher[j].birthdate.month == listTeacher[j+1].birthdate.month &&
+                 listTeacher[j].birthdate.day > listTeacher[j+1].birthdate.day) {
+        aux = listTeacher[j];
+        listTeacher[j] = listTeacher[j+1];
+        listTeacher[j+1] = aux;
+      }
+    }
+  }
+  for(int i = 0; i < qty_teacher; i++) {
+    printf("%d/%d/%d ----- %s\n",  listTeacher[i].birthdate.day, listTeacher[i].birthdate.month, listTeacher[i].birthdate.year, listTeacher[i].name);
+  }
+}
 int reportTeachersGender(){
   printf("\nList of teachers order by gender\n");
   if(qty_teacher<1){
@@ -1029,5 +1113,46 @@ int reportSubjectBelowThree(){
   }
 }
 int reportPeopleStringName(){
-  
+    setbuf(stdin, 0);
+    char words[50];
+    int count;
+    printf("\nSearch peoples by string name:\n");
+    printf("\nEnter string:  ");
+    setbuf(stdin, 0);
+    fgets(words, 49, stdin);
+    if(qty_student > 0) {
+      for (int i = 0; i < qty_student; i++) {
+        count = 0;
+        for (int j = 0; j < strlen(listStudent[i].name); j++) {
+          for (int q = 0; q < strlen(words); q++) {
+            setbuf(stdin, 0);
+            if (words[q] == listStudent[i].name[j]) {
+              count++;
+              break;
+            }
+          }
+        }
+        if (count > 3) {
+          printf("- %s\n", listStudent[i].name);
+        }
+      }
+    }
+      if(qty_teacher > 0) {
+      for (int i = 0; i < qty_teacher; i++) {
+        count = 0;
+        for (int j = 0; j < strlen(listTeacher[i].name); j++) {
+          for (int q = 0; q < strlen(words); q++) {
+            setbuf(stdin, 0);
+            if (words[q] == listTeacher[i].name[j]) {
+              count++;
+              break;
+            }
+          }
+        }
+        if (count > 3) {
+          printf("- %s\n", listTeacher[i].name);
+        }
+      }
+    }
+    
 }
