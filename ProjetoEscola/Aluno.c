@@ -1,6 +1,7 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #define SIZESTUDENT 10
 #define SIZETEACHER 10
 #define SIZESUBJECT 10
@@ -32,14 +33,15 @@ int reportTeachersGender();
 int reportPeopleBirthdayMonth();
 int reportSubjectListName();
 int reportSubjectOverForty();
-//int reportPeopleStringName(); 
+int reportPeopleStringName(); 
 int reportSubjectListNameRegistred();
 int reportStudentsSubject(); 
 int reportStudentNameOrder();
 int reportStudentBirthdateOrder();
 int reportTeacherNameOrder();
 int reportTeacherBirthdateOrder();
-
+int reportSubjectBelowThree();
+int reportPeopleStringName();
 
 typedef struct data {
   int day;
@@ -53,6 +55,7 @@ typedef struct student{
   int registration; 
   BirthDate birthdate; 
   char CPF[15];
+  int subjectRegistred;
 } Student; 
 
 typedef struct teacher{
@@ -69,7 +72,7 @@ typedef struct subject {
   int code; 
   int vacancies;
   Teacher teacher;
-  Student student;
+  Student student[SIZESTUDENT];
 }Subject; 
 
 Student studentRegistration; 
@@ -101,8 +104,8 @@ int main() {
       switch(MenuCadastre){
         
         case 1:{
-          
-          while(!exitStudent){
+           
+          while(!exitStudent){ 
             int choiceMenuStudent, menuStudent;
             menuStudent = menuStudentCadastre(choiceMenuStudent);
             
@@ -165,8 +168,7 @@ int main() {
         }
         case 3: {
           while(!exitSubject){
-            printf("Discipline Cadastre");
-            while(!exitSubject){
+            
             int choiceMenuSubject, menuSubject;
             menuSubject = menuSubjectCadastre(choiceMenuSubject);
             
@@ -197,12 +199,10 @@ int main() {
               }
             }
           }
-          }
         break;
         }
         case 4: {
           while(!exitReports){
-            printf("Reports");
             int choiceMenuReports, menuReport;
             menuReport = menuReports(choiceMenuReports);
             switch(menuReport){
@@ -216,7 +216,6 @@ int main() {
               }
               case 3:{
                 reportStudentBirthdateOrder();
-
               break;
               }
               case 4:{
@@ -248,10 +247,17 @@ int main() {
               break;
               }
               case 11:{
-               //reportPeopleStringName();
+               reportPeopleStringName();
               break;
               }
-              
+              case 12:{
+                reportSubjectBelowThree();
+              break;
+              }
+              case 13:{
+                exitReports =1;
+              break;
+              }
             }
             
           }
@@ -271,13 +277,13 @@ int main() {
 
 int menuGeneral(int option){
   
-    printf("\nMenu of Cadastre \n {1} Student\n {2} Teacher \n {3} Discipline  \n {4} Reports \n {5} Exit\n");
+    printf("\nMenu of Cadastre \n {1} Student\n {2} Teacher \n {3} Subject \n {4} Reports \n {5} Exit\n");
     printf("Enter your option: ");
     scanf("%d", &option);
     return option;
 }
 int menuStudentCadastre(int optionS){
-    printf("\n\nMenu of Student Cadastre \n {1} Cadastre \n {2} List \n {3} Remove students by registration number \n {4} Update Students\n {5} Exit\n");
+    printf("\n\nMenu of Student Cadastre \n {1} Registre \n {2} List \n {3} Remove students by registration number \n {4} Update Students\n {5} Exit\n");
     printf("Enter your option: ");
     scanf("%d", &optionS);
     return optionS;
@@ -373,9 +379,9 @@ int studentDelete(){
           listStudent[j].name[i] = listStudent[j+1].name[i];
           listStudent[j].gender = listStudent[j+1].gender;
           listStudent[j].CPF[i] = listStudent[j+1].CPF[i];
-          listStudent[j].birthdate.day = listStudent[j].birthdate.day ;
+          listStudent[j].birthdate.day = listStudent[j].birthdate.day;
           listStudent[j].birthdate.month = listStudent[j+1].birthdate.month;
-          listStudent[j].birthdate.year = listStudent[j+1].birthdate.year ;
+          listStudent[j].birthdate.year = listStudent[j+1].birthdate.year;
         }
         qty_student--;
         printf("Student has been removed from the registration list\n");
@@ -407,13 +413,6 @@ int studentUpdate(){
             printf("\nEnter new registration number: ");
             scanf("%d", &listStudent[i].registration);
             getchar();
-            for(int j=0; i<qty_student; j++){
-              while (listStudent[i].registration == listStudent[j].registration){
-                printf("\nStudent has been registred");
-                printf("\nEnter registration number: ");
-                scanf("%d", &listStudent[i].registration);
-              }
-            }
             break;
           }
           
@@ -479,15 +478,16 @@ int studentUpdate(){
 
 
 int menuTeacherCadastre(int optionS){
-    printf("\nMenu of Teacher Cadastre\n {1} Cadastre \n {2} List \n {3} Remove Teachers by registration number \n {4} Update Teachers \n {5} Exit\n");
+    printf("\nMenu of Teacher Cadastre\n {1} Registre \n {2} List \n {3} Remove Teachers by registration number \n {4} Update Teachers \n {5} Exit\n");
     printf("Enter your option: ");
     scanf("%d", &optionS);
     return optionS;
 }
 
 int teacherCadastre(){
+  setbuf(stdin, 0);
   if (qty_teacher<SIZETEACHER){
-    setbuf(stdin, 0);
+    printf("\nTEACHER CADASTRE");
     printf("\nEnter registration number: ");
     scanf("%d", &listTeacher[qty_teacher].registration);
     for(int i =0; i<qty_teacher; i++){
@@ -525,39 +525,36 @@ int teacherCadastre(){
         printf("\nYear: ");
         scanf("%d", &listTeacher[qty_teacher].birthdate.year);
       }
-    setbuf(stdin, 0);
     printf("Enter gender, set F to feminine and M to masculine: ");
     scanf("%c", &listTeacher[qty_teacher].gender);
-    
-    
-    printf("Enter CPF: ");
     getchar();
-    fgets(listStudent[qty_teacher].CPF, 11, stdin);
+    printf("Enter CPF: ");
+    
+    fgets(listTeacher[qty_teacher].CPF, 11, stdin);
     qty_teacher++;
   }
   else{
     printf("It's not possible to register new teachers now, the limit has been exceeded.\n");
   }
 }
-
 int teacherListCadastre(){
-  printf("\nList of registered teacher");
-  printf("\nNumber of registered teacher: %d", qty_teacher);
+  printf("\nList of registered teachers");
+  printf("\nNumber of registered teachers: %d", qty_teacher);
   if(qty_teacher<1){
-    printf("It doesn't have teacher registered");
+    printf("\nIt doesn't have any teachers registered");
   }
   else{
     for(int i = 0; i< qty_teacher; i++){
       printf("\nTeacher %d", i+1);
       printf("\nRegistration number: %d", listTeacher[i].registration);
       printf("\nName: %s", listTeacher[i].name);
-      printf("Birthdate: %d/%d/%d", listTeacher[i].birthdate.day, listTeacher[i].birthdate.month, listTeacher[i].birthdate.year);
+      printf("Bithdate: %d/%d/%d ", listTeacher[i].birthdate.day, listTeacher[i].birthdate.month, listTeacher[i].birthdate.year);
       printf("\nCPF: %s", listTeacher[i].CPF);
       if(listTeacher[i].gender == 'F' || listTeacher[i].gender =='f'){
-        printf("\nGender: Feminine\n");
+        printf("Gender: Feminine\n");
       }
       else if (listTeacher[i].gender =='M' || listTeacher[i].gender =='m'){
-        printf("\nGender: Masculine\n");
+        printf("Gender: Masculine\n");
       }
     }
   }
@@ -579,11 +576,12 @@ int teacherDelete(){
             listTeacher[j].name[i] = listTeacher[j+1].name[i];
             listTeacher[j].gender = listTeacher[j+1].gender;
             listTeacher[j].CPF[i] = listTeacher[j+1].CPF[i];
-            listTeacher[j].birthdate.day = listTeacher[j].birthdate.day ;
+            listTeacher[j].birthdate.day = listTeacher[j].birthdate.day;
             listTeacher[j].birthdate.month = listTeacher[j+1].birthdate.month;
             listTeacher[j].birthdate.year = listTeacher[j+1].birthdate.year ;
           }
           qty_teacher--;
+          
           printf("Teacher has been removed from the registration list.\n");
         }
         else{
@@ -591,7 +589,6 @@ int teacherDelete(){
         }
     }
   }
-  
 }
 
 int teacherUpdate(){
@@ -686,7 +683,7 @@ int teacherUpdate(){
 }
 
 int menuSubjectCadastre(int optionS){
-    printf("\nMenu of Subject Cadastre \n {1} Cadastre \n {2} List \n {3} Remove subjects by code \n {4} Update subjects\n {5} Cadastre students in a subject \n {6} Exit\n");
+    printf("\nMenu of Subject Cadastre \n {1} Registre \n {2} List \n {3} Remove subjects by code \n {4} Update subjects\n {5} Registre students in a subject \n {6} Exit\n");
     printf("\nEnter your option: ");
     scanf("%d", &optionS);
     return optionS;
@@ -730,7 +727,7 @@ int subjectListCadastre(){
       printf("\nName: %s", listSubject[i].name);
       printf("\nSemester: %d", listSubject[i].semester);
       printf("\nVacancies: %d", listSubject[i].vacancies);
-      printf("\nSubject Teacher: %s", listSubject[qty_subject].teacher.name);
+      printf("\nSubject Teacher: %s", listSubject[i].teacher.name);
     }
   }
 }
@@ -766,7 +763,7 @@ int subjectDelete(){
 
 int subjectUpdate(){
    printf("\nUpdate informations of subject");
-    printf("\nEnter code:"); 
+    printf("\nEnter code: "); 
     scanf("%d", &deleteRegistration);
     int i, itemUpdate;      
     setbuf(stdin, 0);
@@ -778,37 +775,38 @@ int subjectUpdate(){
         printf("{3} - Semester\n");
         printf("{4} - Vacancies number\n");
         printf("{5} - TeacherName\n");
-        printf("{6} - Exit");
+        printf("{6} - Exit\n");
+        printf("Enter option item: ");
         scanf("%d", &itemUpdate);
           switch(itemUpdate){
             case 1:{
               printf("\nEnter subject code: ");
-              scanf("%d", &listSubject[qty_subject].code);
+              scanf("%d", &listSubject[i].code);
               getchar();
             break;
             }
             
             case 2:{
               printf("\nEnter subject name: ");
-              fgets(listSubject[qty_subject].name, 50, stdin);
+              fgets(listSubject[i].name, 50, stdin);
               getchar();
             break;
             }
             case 3:{
               printf("\nEnter semester of subject: ");
-              scanf("%d", &listSubject[qty_subject].semester);
+              scanf("%d", &listSubject[i].semester);
               getchar();
               break;
             }
             case 4:{
               printf("\nEnter vacancies number: ");
-              scanf("%d", &listSubject[qty_subject].vacancies);
+              scanf("%d", &listSubject[i].vacancies);
               getchar();
               break;
             }
             case 5:{
               printf("\nEnter teacher name: ");
-              fgets(listSubject[qty_subject].teacher.name, 50, stdin);
+              fgets(listSubject[i].teacher.name, 50, stdin);
               getchar();
               break;
             }
@@ -832,12 +830,14 @@ int subjectStudentCadastre(){
   scanf("%d",&codeSuport);
   for(int i =0; i<qty_subject; i++){
     if (codeSuport == listSubject[i].code){
-      printf("Enter the registration number of student");
+      printf("Enter the registration number of student: ");
       scanf("%d", &studentSuport);
       for(int j =0; j< qty_student; j++){
         if(studentSuport == listStudent[j].registration){
-           listStudent[i].name[20]  = listSubject[j].student.name[20];
-          printf("%s", listSubject[j].student.name);
+          strcpy(listSubject[j].student[i].name, listStudent[j].name);
+          listSubject[j].student[i].subjectRegistred ++;
+          getchar();
+          printf("Student Registred");
         }
       }
     }
@@ -845,7 +845,7 @@ int subjectStudentCadastre(){
 }
 
 int menuReports(int optionR){
-  printf("Menu of Reports\n");
+  printf("\nMenu of Reports\n");
   printf("{1} - List students order by gender \n");
   printf("{2} - List students order by name \n");
   printf("{3} - List students order by birthdate\n");
@@ -858,6 +858,7 @@ int menuReports(int optionR){
   printf("{10} - List subjects and teachers with more than 40 vancaiens\n");
   printf("{11} - List name by search\n");
   printf("{12} - List students registred in lass than 3 subjects\n");
+  printf("{13} - Exit\n");
   printf("Enter your option: ");
   scanf("%d", &optionR);
   return optionR;
@@ -896,7 +897,9 @@ int reportStudentsGender(){
 int reportStudentNameOrder(){
   
 }
-int reportStudentBirthdateOrder(){}
+int reportStudentBirthdateOrder(){
+  
+}
 int reportTeacherNameOrder(){}
 int reportTeacherBirthdateOrder(){}
 
@@ -970,7 +973,7 @@ int reportPeopleBirthdayMonth(){
   }
 }
 int reportSubjectListName(){
-  printf("List of subjects registred\n");
+  printf("\nList of subjects registred\n");
   if(qty_subject < 1){
     printf("It doesn't have any subjects registred");
   }
@@ -982,7 +985,7 @@ int reportSubjectListName(){
 }
 
 int reportSubjectOverForty(){
-  printf("List of subjects and teachers with more than 40 vancaiens.\n");
+  printf("\nList of subjects and teachers with more than 40 vancaiens.\n");
   if(qty_subject > 0){
     for(int i = 0; i < qty_subject; i++){
       if(listSubject[i].vacancies >=40){
@@ -991,23 +994,40 @@ int reportSubjectOverForty(){
     }
   }
   else{
-    printf("It doesn't have any subjects registred with this condition");
+    printf("It doesn't have any subjects registred with this condition.");
   }
 }
 
 int reportSubjectListNameRegistred(){
-  printf("List of subjects registred\n");
+  printf("\nList of subjects registred\n");
   if(qty_subject < 1){
-    printf("It doesn't have any subjects registred");
+    printf("It doesn't have any subjects registred.");
   }
   else{
     for(int i = 0; i < qty_subject; i++){
-      
-      printf("%s", listSubject[i].student.name);
+      printf("%s \n", listSubject[i].name);
+      for(int j =0; j<qty_student; j++){
+        printf("%s", listSubject[j].student[i].name);
+      }
     }
   }
 }
 
-int reportSubjectOverThree(){
+int reportSubjectBelowThree(){
+  printf("\nList of students registred in less than 3 subjects\n");
+  if(qty_subject < 1){
+    printf("It doesn't have any subjects registred.");
+  }
+  else{
+    for(int i = 0; i < qty_student; i++){
+      for(int j =0; j<qty_subject; j++){
+        if(listSubject[j].student[i].subjectRegistred <2){
+        printf("%s", listSubject[j].student[i].name);
+        }
+      }
+    }
+  }
+}
+int reportPeopleStringName(){
   
 }
