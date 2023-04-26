@@ -11,10 +11,10 @@
 //  O aluno deve preencher seus dados abaixo, e implementar as questões do trabalho
 
 //  ----- Dados do Aluno -----
-//  Nome:
-//  email:
-//  Matrícula:
-//  Semestre:
+//  Nome: Alda Monique Gonçalves de Alcantara Santos
+//  email: aldamonique.goncalves@gmail.com
+//  Matrícula: 20222160009
+//  Semestre: 2º
 
 //  Copyright © 2016 Renato Novais. All rights reserved.
 // Última atualização: 07/05/2021 - 19/08/2016
@@ -24,6 +24,11 @@
 #include <stdio.h>
 #include "AldaMonique20222160009.h" 
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <locale.h>
+
+
 /*
 ## função utilizada para testes  ##
 
@@ -75,7 +80,6 @@ int teste(int a)
 }
 
 
-
 DataQuebrada quebraData(char data[]){
   DataQuebrada dq;
   char sDia[3];
@@ -84,55 +88,75 @@ DataQuebrada quebraData(char data[]){
 	int i; 
 
 	for (i = 0; data[i] != '/'; i++){
-		sDia[i] = data[i];	
+    if (data[i] >= 48 && data[i] <=57)
+		  sDia[i] = data[i];	
+    else{
+      dq.valido = 0;
+      return dq;
+    }
 	}
+  
 	if(i == 1 || i == 2){ // testa se tem 1 ou dois digitos
-		sDia[i] = '\0';  // coloca o barra zero no final
+		sDia[i] = '\0';  
+    dq.iDia = atoi(sDia);
 	}else {
 		dq.valido = 0;
     return dq;
   }  
 	
-
-	int j = i + 1; //anda 1 cada para pular a barra
+	int j = i + 1; 
 	i = 0;
 
 	for (; data[j] != '/'; j++){
-		sMes[i] = data[j];
-		i++;
+    if(data[j] >= 48 && data[j] <=58 ){
+		  sMes[i] = data[j];
+		  i++;
+    }else {
+      dq.valido = 0;
+      return dq; 
+    }
 	}
 
 	if(i == 1 || i == 2){ // testa se tem 1 ou dois digitos
-		sMes[i] = '\0';  // coloca o barra zero no final
+		sMes[i] = '\0';  
+    dq.iMes = atoi(sMes);
 	}else {
 		dq.valido = 0;
     return dq;
   }
 	
-
 	j = j + 1; //anda 1 cada para pular a barra
 	i = 0;
 	
 	for(; data[j] != '\0'; j++){
-	 	sAno[i] = data[j];
-	 	i++;
-	}
-
-	if(i == 2 || i == 4){ // testa se tem 2 ou 4 digitos
+     if(data[j] >= 48 && data[j] <=58 ){
+       sAno[i] = data[j];
+	 	   i++;
+     }else {
+      dq.valido = 0;
+      return dq; 
+    }
+	} 
+  
+	if( i == 1||i == 2 || i == 4){ // testa se tem 1, 2 ou 4 digitos
 		sAno[i] = '\0';  // coloca o barra zero no final
+      if (i==1 || i == 2){
+        dq.iAno = atoi(sAno) + 2000; 
+      }
+      if(i==4){
+        dq.iAno = atoi(sAno);
+      }
 	}else {
 		dq.valido = 0;
     return dq;
   }
-
-  dq.iDia = atoi(sDia);
+  
   dq.iMes = atoi(sMes);
-  dq.iAno = atoi(sAno); 
-
 	dq.valido = 1;
     
   return dq;
-}
+}  
+
 /*
  Q1 = validar data
 @objetivo
@@ -147,23 +171,45 @@ DataQuebrada quebraData(char data[]){
     pode utilizar strlen para pegar o tamanho da string
     Sempre que tiver dois dígitos no ano soma-se com 2000
  */
-int q1(char data[])
-{
-  int datavalida = 1; 
 
-  //quebrar a string data em strings sDia, sMes, sAno
-
-  //DataQuebrada dataQuebrada = quebraData(data);
-  //if (dataQuebrada.valido == 0) return 0;
-
-  //printf("%s\n", data);
-
-  if (datavalida)
-      return 1;
-  else
-      return 0;
+int q1(char data[]) {
+  int datavalida = 1;
+	printf("%s\n", data);
+  DataQuebrada dataQuebrada = quebraData(data); 
+  if (dataQuebrada.valido == 0){
+		return 0;
+	}
+ return validarData(dataQuebrada); 
 }
 
+int validarData (DataQuebrada datasSeparadas) {
+
+  if (datasSeparadas.iDia < 0 || datasSeparadas.iMes < 0 || datasSeparadas.iMes > 12 || datasSeparadas.iAno < 0) {
+    return 0;
+  }
+    
+  int diaAux;
+  switch (datasSeparadas.iMes) {
+    case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+      diaAux = 31; 
+    case 4: case 6: case 9: case 11:
+      diaAux = 30;
+    case 2:
+      if (((datasSeparadas.iAno % 4 == 0) && (datasSeparadas.iAno % 100 != 0)) || datasSeparadas.iAno % 400 == 0){
+        diaAux = 29;
+      } else {
+        diaAux = 28;
+      }
+    default:
+      return 0;
+  }
+
+  if (datasSeparadas.iDia > diaAux) {
+    return 0;
+  } 
+
+  return 1; 
+}
 
 
 /*
@@ -180,31 +226,68 @@ int q1(char data[])
     4 -> datainicial > datafinal
     Caso o cálculo esteja correto, os atributos qtdDias, qtdMeses e qtdAnos devem ser preenchidos com os valores correspondentes.
  */
+
+
 DiasMesesAnos q2(char datainicial[], char datafinal[])
 {
 
-    //calcule os dados e armazene nas três variáveis a seguir
-    DiasMesesAnos dma;
+  DiasMesesAnos dma;
 
-    if (q1(datainicial) == 0){
-      dma.retorno = 2;
-      return dma;
-    }else if (q1(datafinal) == 0){
-      dma.retorno = 3;
-      return dma;
-    }else{
-      //verifique se a data final não é menor que a data inicial
-      
-      //calcule a distancia entre as datas
+  if (q1(datainicial) == 0) {
+    dma.retorno = 2;
+    return dma;
+  } else if (q1(datafinal) == 0) {
+    dma.retorno = 3;
+    return dma;
+  } 
 
+  DataQuebrada dmaInicial = quebraData(datainicial);
+  DataQuebrada dmaFinal = quebraData(datafinal);
+  if(dmaInicial.iAno > dmaFinal.iAno){
+    dma.retorno = 4;
+    return dma;
+  }
+  else if(dmaInicial.iAno == dmaFinal.iAno && dmaInicial.iMes > dmaFinal.iMes){
+    dma.retorno = 4;
+    return dma;
+  } else if(dmaInicial.iAno == dmaFinal.iAno && dmaInicial.iMes == dmaFinal.iMes && dmaInicial.iDia > dmaFinal.iDia){
+    dma.retorno = 4;
+    return dma;
+  }
+  int qtdAnos = dmaFinal.iAno - dmaInicial.iAno;
+  int qtdMeses = dmaFinal.iMes - dmaInicial.iMes;
+  int qtdDias = dmaFinal.iDia - dmaInicial.iDia;
 
-      //se tudo der certo
-      dma.retorno = 1;
-      return dma;
-      
+  if(qtdDias <0){
+  switch (dmaFinal.iMes) {
+    case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+      qtdDias += 31; 
+    break;
+    case 4: case 6: case 9: case 11:
+      qtdDias += 30;
+    break;
+    case 2:{
+      if (((dmaFinal.iAno % 4 == 0) && (dmaFinal.iAno % 100 != 0)) || dmaFinal.iAno % 400 == 0){
+        qtdDias += 29;
+      } else {
+        qtdDias += 28;
+      }
     }
-    
+  }
+  qtdMeses--;
+  if (qtdMeses < 0) {
+     qtdMeses += 12;
+     qtdAnos--;
+  }
 }
+  dma.qtdDias = qtdDias;
+  dma.qtdMeses = qtdMeses;
+  dma.qtdAnos = qtdAnos;
+  dma.retorno = 1;
+  return dma;
+
+}
+  
 
 /*
  Q3 = encontrar caracter em texto
@@ -216,13 +299,38 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
  @saida
     Um número n >= 0.
  */
-int q3(char *texto, char c, int isCaseSensitive)
-{
-    int qtdOcorrencias = -1;
+int q3(char *texto, char c, int isCaseSensitive) {
+  int qtdOcorrencias = 0;
 
-    return qtdOcorrencias;
+  if (isCaseSensitive == 1) {
+    for (int i = 0; texto[i] != '\0'; i++) {
+      if (texto[i] == c) {
+        qtdOcorrencias++;
+      }
+    }
+  } else {
+    if (c >= 'A' && c <= 'Z') {
+      c += 32;
+    } else if (c >= 'a' && c <= 'z') {
+      c -= 32;
+    }
+
+    for (int i = 0; texto[i] != '\0'; i++) {
+      if (texto[i] == c) {
+        qtdOcorrencias++;
+      } else if (texto[i] >= 'A' && texto[i] <= 'Z') {
+        if (texto[i] + 32 == c) { 
+          qtdOcorrencias++;
+        }
+      } else if (texto[i] >= 'a' && texto[i] <= 'z') {
+        if (texto[i] - 32 == c) { 
+          qtdOcorrencias++;
+        }
+      }
+    }
+  }
+  return qtdOcorrencias;
 }
-
 /*
  Q4 = encontrar palavra em texto
  @objetivo
@@ -238,11 +346,35 @@ int q3(char *texto, char c, int isCaseSensitive)
         O retorno da função, n, nesse caso seria 1;
 
  */
-int q4(char *strTexto, char *strBusca, int posicoes[30])
-{
-    int qtdOcorrencias = -1;
 
-    return qtdOcorrencias;
+int q4(char *texto, char *palavra_busca, int posicoes[30]) {
+    return contar_palavras(texto, palavra_busca, posicoes);
+}
+
+int contar_palavras(char *texto, char *palavra_busca, int posicoes[30]) {
+    int tamanho_busca, tamanho_texto;  
+    tamanho_texto = strlen(texto);
+    tamanho_busca = strlen(palavra_busca);
+    int posicao_atual = 0;
+    int contagem_ocorrencias = 0;
+    int i, j = 0;
+    int letras_verificadas = 0;
+
+    for (i = 0; texto[i] != '\0'; i++) {
+        if (palavra_busca[j] == texto[i])
+            j++;
+        else
+            j = 0;
+        if (j == tamanho_busca) {
+            j = 0;
+            posicoes[posicao_atual] = i + 1 - (tamanho_busca - 1);
+            posicao_atual++;
+            posicoes[posicao_atual] = i + 1;
+            posicao_atual++;
+            contagem_ocorrencias++;
+        }
+    }
+    return contagem_ocorrencias;
 }
 
 /*
@@ -255,12 +387,15 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
     Número invertido
  */
 
-int q5(int num)
-{
 
-    return num;
+int q5(int num) {
+  int inversor = 0;
+  while (num != 0) {
+    inversor = (inversor * 10) + (num % 10);
+    num = num / 10;
+  }
+  return inversor;
 }
-
 /*
  Q6 = ocorrência de um número em outro
  @objetivo
@@ -271,8 +406,58 @@ int q5(int num)
     Quantidade de vezes que número de busca ocorre em número base
  */
 
-int q6(int numerobase, int numerobusca)
-{
-    int qtdOcorrencias;
-    return qtdOcorrencias;
+
+int q6(int numeroBase, int numBusca){
+    
+  int qtdOcorrencias = 0; 
+  int restoNum, restoNumBusca;
+  int contador;
+  int numBuscaCop = numBusca; 
+
+ 
+  if(numeroBase == 0 && numBusca == 0){
+    qtdOcorrencias++; 
+  }
+  if (numBusca > 10){
+
+
+    while(numeroBase > 0){
+      restoNum = numeroBase % 10;
+      restoNumBusca = numBusca % 10;
+  
+      if(restoNum == restoNumBusca){
+        contador = 1;
+        while(restoNum == restoNumBusca && numeroBase > 0 && contador > 0){
+          numeroBase = numeroBase / 10;
+          numBusca = numBusca / 10;
+          restoNum = numeroBase % 10;
+          restoNumBusca = numBusca % 10;
+    
+          if(numBusca < 10 && numBusca == restoNum){
+            restoNum = numeroBase;
+            contador = -1;
+          }
+          if(contador < 0){
+            qtdOcorrencias++;
+            numeroBase = numeroBase / 10;
+            numBusca = numBuscaCop;
+          }
+        }
+      }else{
+        numeroBase = numeroBase / 10;
+        numBusca = numBuscaCop;
+      }
+    }
+  }
+  else{
+    for (; numeroBase > 0; ){
+      restoNum = numeroBase % 10;
+      if (restoNum == numBusca) 
+      {
+        qtdOcorrencias++;
+      }
+      numeroBase = numeroBase / 10;
+    }
+  } 
+  return qtdOcorrencias; 
 }

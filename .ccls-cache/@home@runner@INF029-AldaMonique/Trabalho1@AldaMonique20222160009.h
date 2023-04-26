@@ -50,5 +50,8 @@ int q4(char *strTexto, char *strBusca, int posicoes[30]);
 int q5(int num);
 int q6(int numerobase, int numerobusca);
 DataQuebrada quebraData(char data[]);
+int validarData (DataQuebrada datasSeparadas);
+int qtdPalavras(char *texto, char *busca, int posicoes[30]);
+int contar_palavras(char *texto, char *palavra_busca, int posicoes[30]);
 
 #endif  // TRABALHO1_PRIMEIROULTIMONOMEMATRICULA_H

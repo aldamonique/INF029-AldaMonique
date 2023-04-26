@@ -29,9 +29,9 @@ int main(){
   for(; i< strlen(str) && str[i] != '/'; i++){
     sAno[k++] = str[i];
   }
-  sMes[k++] = '\0';
+  sAno[k++] = '\0';
 
-  //imprimir
+  //imprimir 
   printf("Dia: %s\n", sDia);
   printf("Mes: %s\n", sMes);
   printf("Ano: %s\n", sAno);
